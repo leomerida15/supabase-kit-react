@@ -1,3 +1,7 @@
+import { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
+import { UseQueryOptions } from '@tanstack/react-query';
+import { Where } from './types';
+
 export type DatabaseTemp = {
     public: {
         Tables: {
@@ -74,26 +78,37 @@ export type Tables<
     ? R
     : never;
 
+// Configuración del hook
+export interface SupabaseQueryConfig<
+    D extends DatabaseTemp,
+    K extends keyof (D['public']['Tables'] & D['public']['Views']) = keyof (D['public']['Tables'] &
+        D['public']['Views']) &
+        Parameters<SupabaseClient<D>['from']>['0'],
+    S extends boolean = false,
+    V = S extends true
+        ? (D['public']['Tables'] & D['public']['Views'])[K] extends {
+              Row: infer R;
+          }
+            ? R
+            : never
+        : (D['public']['Tables'] & D['public']['Views'])[K] extends {
+              Row: infer R;
+          }
+        ? R[]
+        : never[],
+> {
+    table: K;
+    column?: string;
+    where?: Where<V>;
+    single?: S;
+    limit?: number;
+    count?: 'exact' | 'planned' | 'estimated';
+    enabled?: boolean;
+    options?: Omit<UseQueryOptions<SupabaseQueryResult<V>, PostgrestError>, 'queryKey' | 'queryFn'>;
+}
+
 // Resultado del query
 export type SupabaseQueryResult<T> = {
     payload: T;
     count: number;
 };
-
-export type Where<V> = {
-    eq?: EqWhere<V>;
-    in?: InWhere<V>;
-    neq?: EqWhere<V>;
-    gt?: gtWhere<V>;
-    gte?: gtWhere<V>;
-    lt?: gtWhere<V>;
-    lte?: gtWhere<V>;
-    is?: isWhere<V>;
-    or?: OrWhere;
-    filter?: FilterWhere<V>;
-    match?: matchWhere<V>;
-};
-
-export type WhereKeys = keyof Where<any>;
-
-export type WhereBasicKeys = keyof Omit<Where<any>, 'or' | 'filter' | 'match'>;

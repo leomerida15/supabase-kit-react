@@ -1,3 +1,3 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode } from 'react';
 
-export type FCC<P = {}> = FC<P & { children?: ReactNode }>
+export type FCC<P = object> = FC<P & { children?: ReactNode }>;

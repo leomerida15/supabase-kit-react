@@ -1,36 +1,104 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { useQueries } from '@tanstack/react-query';
+import { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { QueryBuilder } from './build';
-import { DatabaseTemp, PublicSchemaKeys, SupabaseQueryConfig, TableName, Tables } from './types';
+import { SupabaseInfoniteQueryConfig, SupabaseQueryResult } from './types.infonite';
+import { DatabaseTemp, SupabaseQueryConfig } from './types.query';
 
-export const createSupabaseQuery = <D extends DatabaseTemp = any>(
-  client: SupabaseClient<D>
-) => {
-  const useSupabaseQuery = ({
-    table,
-    column = '*',
-    count,
-    ...configObj
-  }: SupabaseQueryConfig<D, PublicSchemaKeys<D>, Tables<D, PublicSchemaKeys<D>, TableName<D, PublicSchemaKeys<D>>>) => {
-    const fetchData = async () => {
-      const QueryBase = client.from(table).select(column, { count });
+export const createSupabaseQuery = <D extends DatabaseTemp>(client: SupabaseClient<D>) => {
+    const useSupabaseQuery = ({
+        table,
+        column = '*',
+        count,
+        options = {},
+        single,
+        enabled,
+        ...configObj
+    }: SupabaseQueryConfig<D>) => {
+        type V = typeof single extends true
+            ? (D['public']['Tables'] & D['public']['Views'])[typeof table] extends {
+                  Row: infer R;
+              }
+                ? R
+                : never
+            : (D['public']['Tables'] & D['public']['Views'])[typeof table] extends {
+                  Row: infer R;
+              }
+            ? R[]
+            : never[];
+        const fetchData = async (): Promise<SupabaseQueryResult<V>> => {
+            const QueryBase = client.from(table).select(column, { count });
 
-      const QueryFn = QueryBuilder<D>(configObj, QueryBase);
+            const QueryFn = QueryBuilder<D>(configObj, QueryBase);
 
-      const { data, error, count: rowCount } = await QueryFn;
+            const { data, error, count: rowCount } = await QueryFn;
 
-      if (error) throw error;
+            if (error) throw error;
 
-      return {
-        count: rowCount || 0,
-        payload: data as T,
-      };
+            return {
+                count: rowCount ?? 0,
+                payload: data as V,
+            };
+        };
+
+        const { initialData: InitProp, ...optionsHook } = options;
+
+        const initialData = useMemo(() => {
+            if (single) return { payload: {}, count: 0 } as SupabaseQueryResult<V>;
+            //
+            return { payload: [], count: 0 } as SupabaseQueryResult<V>;
+        }, [single]);
+
+        return useQuery<SupabaseQueryResult<V>, PostgrestError>({
+            queryKey: [table, configObj.where, configObj.limit, single, count],
+            initialData,
+            queryFn: fetchData,
+            enabled,
+            ...optionsHook,
+        });
     };
 
-    useQueries({});
-  };
+    const useSupabaseInfiniteQuery = ({
+        table,
+        column = '*',
+        options,
+        enabled,
+        count = 'exact',
+        ...configObj
+    }: SupabaseInfoniteQueryConfig<D>) => {
+        type V = (D['public']['Tables'] & D['public']['Views'])[typeof table] extends {
+            Row: infer R;
+        }
+            ? R[]
+            : never[];
+        const fetchData = async (): Promise<SupabaseQueryResult<V>> => {
+            const QueryBase = client.from(table).select(column, { count });
 
-  return {
-    useSupabaseQuery,
-  };
+            const QueryFn = QueryBuilder<D>(configObj, QueryBase);
+
+            const { data, error, count: rowCount } = await QueryFn;
+
+            if (error) throw error;
+
+            return {
+                count: rowCount ?? 0,
+                payload: data as V,
+            };
+        };
+
+        const { initialData: InitProp, ...optionsHook } = options;
+
+        return useInfiniteQuery<SupabaseQueryResult<V>, PostgrestError>({
+            queryKey: [table, configObj.where, configObj.limit],
+            queryFn: fetchData,
+            enabled,
+            ...optionsHook,
+        });
+    };
+
+    return {
+        useSupabaseInfiniteQuery,
+        useSupabaseQuery,
+        QueryBuilder,
+    };
 };
