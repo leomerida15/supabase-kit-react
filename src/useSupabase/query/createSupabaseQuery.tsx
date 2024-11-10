@@ -1,9 +1,9 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { useQueries } from '@tanstack/react-query';
 import { QueryBuilder } from './build';
-import { PublicSchemaKeys, SupabaseQueryConfig, TableName, Tables } from './types';
+import { DatabaseTemp, PublicSchemaKeys, SupabaseQueryConfig, TableName, Tables } from './types';
 
-export const createSupabaseQuery = <D = any>(
+export const createSupabaseQuery = <D extends DatabaseTemp = any>(
   client: SupabaseClient<D>
 ) => {
   const useSupabaseQuery = ({

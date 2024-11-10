@@ -1,6 +1,17 @@
 import { PostgrestError } from '@supabase/supabase-js';
 import { UseQueryOptions } from '@tanstack/react-query';
 
+export type DatabaseTemp = {
+  public: {
+    Tables: {
+      Row: Record<string, any>;
+    };
+    Views: {
+      Row: Record<string, any>;
+    };
+  };
+};
+
 // Tipos de filtro para configuraciones avanzadas
 export type OrWhere = string[];
 export type EqWhere<T> = Partial<
@@ -46,41 +57,33 @@ export type FilterOperator =
   | 'phfts'
   | 'wfts';
 
-type PublicSchema<D> = D[Extract<keyof D, 'public'>] & any;
+type PublicSchema<D extends DatabaseTemp> = D[Extract<keyof D, 'public'>] & any;
 
-export type PublicSchemaKeys<D extends Obj> =
+export type PublicSchemaKeys<D extends DatabaseTemp> =
   | keyof (PublicSchema<D>['Tables'] & PublicSchema<D>['Views'])
   | { schema: keyof D };
 
 export type TableName<
-  D extends any,
+  D extends DatabaseTemp,
   P extends PublicSchemaKeys<D>,
-  T extends P extends { schema: keyof any }
-    ? keyof (D[P['schema']]['Tables'] & D[P['schema']]['Views'])
+  T extends P extends { schema: keyof D }
+    ? keyof (D['public']['Tables'] & D['public']['Views'])
     : never = never
 > = T;
 
 export type Tables<
-  D extends any,
+  D extends DatabaseTemp,
   P extends PublicSchemaKeys<D>,
   T extends TableName<D, P>
-> = P extends { schema: keyof D }
-  ? (D[P['schema']]['Tables'] & D[P['schema']]['Views'])[T] extends {
-      Row: infer R;
-    }
-    ? R
-    : never
-  : P extends keyof (PublicSchema<D>['Tables'] & PublicSchema<D>['Views'])
-  ? (PublicSchema<D>['Tables'] & PublicSchema<D>['Views'])[P] extends {
-      Row: infer R;
-    }
-    ? R
-    : never
+> = (D['public']['Tables'] & D['public']['Views'])[T] extends {
+  Row: infer R;
+}
+  ? R
   : never;
 
 // Configuración del hook
 export interface SupabaseQueryConfig<
-  D extends any,
+  D extends DatabaseTemp,
   K extends PublicSchemaKeys<D>,
   V = Tables<D, K, TableName<D, K>>
 > {
