@@ -2,8 +2,9 @@ import { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { QueryBuilder } from './build';
-import { SupabaseInfoniteQueryConfig, SupabaseQueryResult } from './types.infonite';
-import { DatabaseTemp, SupabaseQueryConfig } from './types.query';
+import { DatabaseTemp, SupabaseQueryResult } from './types';
+import { SupabaseInfoniteQueryConfig } from './types.infonite';
+import { SupabaseQueryConfig } from './types.query';
 
 export const createSupabaseQuery = <D extends DatabaseTemp>(client: SupabaseClient<D>) => {
     const useSupabaseQuery = ({

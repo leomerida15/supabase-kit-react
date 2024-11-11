@@ -1,7 +1,7 @@
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import { GenericSchema } from '@supabase/supabase-js/dist/module/lib/types';
-import { Where, WhereBasicKeys } from './types';
-import { DatabaseTemp, SupabaseQueryConfig } from './types.query';
+import { DatabaseTemp, Where, WhereBasicKeys } from './types';
+import { SupabaseQueryConfig } from './types.query';
 
 type ConfigObj<D extends DatabaseTemp> = Omit<SupabaseQueryConfig<D>, 'table' | 'column' | 'count'>;
 

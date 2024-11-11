@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { DatabaseTemp, SupabaseQueryResult, Where } from './types';
 
 // Configuración del hook
-export interface SupabaseInfoniteQueryConfig<
+export interface SupabaseMutationConfig<
     D extends DatabaseTemp,
     K extends keyof (D['public']['Tables'] & D['public']['Views']) = keyof (D['public']['Tables'] &
         D['public']['Views']) &
@@ -25,5 +25,3 @@ export interface SupabaseInfoniteQueryConfig<
     count?: 'exact' | 'planned' | 'estimated';
     enabled?: boolean;
 }
-
-// Resultado del query
