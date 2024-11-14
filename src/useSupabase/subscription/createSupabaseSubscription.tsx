@@ -10,7 +10,7 @@ import { PayloadRealtime, SupaSubscriptionProps } from './types';
 
 export const createSupabaseSubscription = <D extends DatabaseTemp>(
     client: SupabaseClient<D>,
-    useQuery: ReturnType<typeof createSupabaseQuery<D>>['useSupabaseQuery'],
+    useQuery: ReturnType<typeof createSupabaseQuery<D>>['useSupaQuery'],
 ) => {
     const useSupaSubscription = ({
         table,
