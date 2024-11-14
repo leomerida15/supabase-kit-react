@@ -47,7 +47,7 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
             return () => {
                 subscription.unsubscribe();
             };
-        }, []);
+        }, [filter, callback, event, schema, table, type, channel]);
     };
 
     const useSupaRealtime = ({
@@ -123,7 +123,7 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
             return () => {
                 subscription.unsubscribe();
             };
-        }, []);
+        }, [queryClient, filter, channel, table, QueryKey]);
 
         return query;
     };

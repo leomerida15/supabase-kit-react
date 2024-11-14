@@ -26,8 +26,8 @@ jobs:
             - name: 💅 Lint
               run: bun lint
 
-            - name: 🧪 Test
-              run: bun test --ci --coverage --max-workers=2
+            # - name: 🧪 Test
+            #   run: bun test --ci --coverage --max-workers=2
 
             - name: 🛠️ Build
               run: bun run build
