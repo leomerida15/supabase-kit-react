@@ -1,9 +1,9 @@
 {
     "name": "@supabase-kit/react",
-    "version": "0.2.5",
+    "version": "0.2.7",
     "license": "MIT",
     "author": "leomerida15",
-    "type": "commonjs",
+    "type": "module",
     "main": "dist/index.js",
     "module": "dist/react.esm.js",
     "typings": "dist/index.d.ts",
