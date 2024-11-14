@@ -10,7 +10,18 @@ export const QueryBuilder = <
     SchemaName extends string & keyof D = 'public' extends keyof D ? 'public' : string & keyof D,
     Schema extends GenericSchema = D[SchemaName] extends GenericSchema ? D[SchemaName] : any,
 >(
-    { where = {}, limit, single }: ConfigObj<D>,
+    {
+        where = {},
+        limit,
+        single,
+        maybeSingle,
+        csv,
+
+        explain,
+
+        order,
+        range,
+    }: ConfigObj<D>,
     Query: PostgrestFilterBuilder<Schema, any, any>,
 ) => {
     const where_keys: WhereBasicKeys[] = ['eq', 'neq', 'in', 'is', 'lt', 'lte', 'gt', 'gte'];
@@ -37,6 +48,23 @@ export const QueryBuilder = <
     if (limit) Query = Query.limit(limit);
 
     if (single) Query = Query.single() as typeof Query;
+
+    if (maybeSingle) Query = Query.maybeSingle() as typeof Query;
+
+    if (csv) Query = Query.csv() as typeof Query;
+
+    if (explain) Query = Query.explain(explain) as typeof Query;
+
+    if (order)
+        for (const [k, v] of Object.entries<{
+            ascending?: boolean;
+            nullsFirst?: boolean;
+            foreignTable?: string;
+            referencedTable?: string;
+        }>(order as Record<string, any>))
+            Query = Query.order(k, v);
+
+    if (range) Query = Query.range(range.from, range.to, range.options);
 
     return Query;
 };

@@ -1,6 +1,6 @@
 import { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
 import { UseQueryOptions } from '@tanstack/react-query';
-import { DatabaseTemp, SupabaseQueryResult, Where } from './types';
+import { baseRangeWhere, DatabaseTemp, orderWhere, SupabaseQueryResult, Where } from './types';
 
 // Configuración del hook
 export interface SupabaseQueryConfig<
@@ -25,8 +25,25 @@ export interface SupabaseQueryConfig<
     column?: string;
     where?: Where<V>;
     single?: S;
+    maybeSingle?: S;
     limit?: number;
     count?: 'exact' | 'planned' | 'estimated';
     enabled?: boolean;
-    options?: Omit<UseQueryOptions<SupabaseQueryResult<V>, PostgrestError>, 'queryKey' | 'queryFn'>;
+    order?: orderWhere<V>;
+    range?: baseRangeWhere;
+    csv?: boolean;
+    explain?: {
+        analyze?: boolean;
+        verbose?: boolean;
+        settings?: boolean;
+        buffers?: boolean;
+        wal?: boolean;
+        format?: 'json' | 'text';
+    };
+    options?: Omit<
+        UseQueryOptions<SupabaseQueryResult<V>, PostgrestError>,
+        'queryKey' | 'queryFn' | 'initialData'
+    > & {
+        queryKey?: string[];
+    };
 }

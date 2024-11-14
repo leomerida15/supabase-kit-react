@@ -25,6 +25,41 @@ export type FilterWhere<T> = Record<
 export type gtWhere<T> = Partial<Record<T extends Array<any> ? keyof T[0] : keyof T, T[keyof T]>>;
 export type isWhere<T> = Partial<Record<T extends Array<any> ? keyof T[0] : keyof T, T[keyof T]>>;
 export type matchWhere<T> = Partial<T>;
+export type likeWhere<T> = [T extends Array<any> ? keyof T[0] : keyof T, string];
+export type containsWhere<T> = Partial<
+    Record<T extends Array<any> ? keyof T[0] : keyof T, string[]>
+>;
+
+export type rangeWhere<T> = Partial<Record<T extends Array<any> ? keyof T[0] : keyof T, string>>;
+
+export type overlapsWhere<T> = Partial<
+    Record<T extends Array<any> ? keyof T[0] : keyof T, string | string[]>
+>;
+
+export type textSearchWhere<T> = Partial<
+    Record<
+        T extends Array<any> ? keyof T[0] : keyof T,
+        [string, options?: { config?: string; type?: 'plain' | 'phrase' | 'websearch' }]
+    >
+>;
+
+export type orderWhere<T> = Partial<
+    Record<
+        T extends Array<any> ? keyof T[0] : keyof T,
+        {
+            ascending?: boolean;
+            nullsFirst?: boolean;
+            foreignTable?: string;
+            referencedTable?: string;
+        }
+    >
+>;
+
+export type baseRangeWhere = {
+    from: number;
+    to: number;
+    options: { foreignTable?: string; referencedTable?: string };
+};
 
 export type FilterOperator =
     | 'eq'
@@ -82,16 +117,28 @@ export type SupabaseQueryResult<T> = {
 
 export type Where<V> = {
     eq?: EqWhere<V>;
-    in?: InWhere<V>;
     neq?: EqWhere<V>;
     gt?: gtWhere<V>;
     gte?: gtWhere<V>;
     lt?: gtWhere<V>;
     lte?: gtWhere<V>;
     is?: isWhere<V>;
+    in?: InWhere<V>;
     or?: OrWhere;
     filter?: FilterWhere<V>;
     match?: matchWhere<V>;
+    like?: likeWhere<V>;
+    ilike?: likeWhere<V>;
+    contains?: containsWhere<V>;
+    containedBy?: containsWhere<V>;
+    rangeGt?: rangeWhere<V>;
+    rangeGte?: rangeWhere<V>;
+    rangeLt?: rangeWhere<V>;
+    rangeLte?: rangeWhere<V>;
+    rangeAdjacent?: rangeWhere<V>;
+    overlaps?: overlapsWhere<V>;
+    textSearch?: textSearchWhere<V>;
+    not?: FilterWhere<V>;
 };
 
 export type WhereKeys = keyof Where<any>;
