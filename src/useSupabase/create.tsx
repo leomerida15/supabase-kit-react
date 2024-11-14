@@ -22,7 +22,7 @@ export const createSupabaseTools = <D extends DatabaseTemp = any>(client: Supaba
 
     const SupabaseQuery = createSupabaseQuery(client);
 
-    const SupabaseSubscription = createSupabaseSubscription(client, SupabaseQuery.useSupabaseQuery);
+    const SupabaseSubscription = createSupabaseSubscription(client, SupabaseQuery.useSupaQuery);
 
     return {
         useSupabase,

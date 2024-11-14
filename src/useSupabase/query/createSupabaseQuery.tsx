@@ -70,7 +70,7 @@ export const createSupabaseQuery = <D extends DatabaseTemp>(client: SupabaseClie
         });
     };
 
-    const useSupaInfinite = ({
+    const useSupaInfiniteQuery = ({
         table,
         column = '*',
         options,
@@ -109,8 +109,8 @@ export const createSupabaseQuery = <D extends DatabaseTemp>(client: SupabaseClie
     };
 
     return {
-        useSupabaseInfiniteQuery: useSupaInfinite,
-        useSupabaseQuery: useSupaQuery,
+        useSupaInfiniteQuery,
+        useSupaQuery,
         QueryBuilder,
     };
 };
