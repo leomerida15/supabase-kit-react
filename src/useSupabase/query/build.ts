@@ -99,6 +99,18 @@ const objMatchBuild = {
     },
 };
 
+/**
+ * Enhances a Supabase query with various filtering, ordering, and formatting options.
+ *
+ * @template D - The database schema type.
+ * @template SchemaName - The schema name within the database.
+ * @template Schema - The specific schema definition.
+ *
+ * @param {ConfigObj<D>} param0 - Configuration object containing filtering and other options.
+ * @param {PostgrestFilterBuilder<Schema, any, any>} Query - The initial Postgrest query builder object.
+ *
+ * @returns {PostgrestFilterBuilder<Schema, any, any>} - The enhanced Postgrest query builder object with applied configurations.
+ */
 export const QueryBuilder = <
     D extends DatabaseTemp,
     SchemaName extends string & keyof D = 'public' extends keyof D ? 'public' : string & keyof D,

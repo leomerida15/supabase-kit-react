@@ -8,6 +8,14 @@ import { createSupabaseSubscription } from './subscription/createSupabaseSubscri
 export const createSupabaseTools = <D extends DatabaseTemp = any>(client: SupabaseClient<D>) => {
     const useSupabase = () => useMemo(() => client, []);
 
+    /**
+     * Hook to get the user session.
+     * @returns The user session.
+     *
+     * The query key is `['session', client]`.
+     * The query function is `async () => client.auth.getSession()`.
+     * The initial data is `null`.
+     */
     const useSupaSession = () => {
         return useQuery({
             queryKey: ['session', client],

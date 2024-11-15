@@ -8,6 +8,25 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
     client: SupabaseClient<D>,
     useQuery: ReturnType<typeof createSupabaseQuery<D>>['useSupaQuery'],
 ) => {
+    /**
+     * Custom hook to create a Supabase subscription with specified configurations.
+     *
+     * @template D - Database schema type.
+     *
+     * @param {Object} config - Configuration object for the subscription.
+     * @param {string} config.table - The name of the table to subscribe to.
+     * @param {string} [config.schema='public'] - The database schema to use.
+     * @param {string} [config.event='*'] - Event type to listen for (e.g., INSERT, UPDATE, DELETE).
+     * @param {Object} [config.where] - Filter object to specify conditions for events.
+     * @param {string} [config.type='postgres_changes'] - Type of event to listen for.
+     * @param {string} [config.channel='general'] - Channel name for the subscription.
+     * @param {Function} [config.callback=(payload) => console.log(payload)] - Callback function to handle subscription payloads.
+     *
+     * @returns {void}
+     *
+     * This hook sets up a Supabase subscription based on the provided configuration.
+     * It automatically unsubscribes when the component is unmounted or the dependencies change.
+     */
     const useSupaSubscription = ({
         table,
         schema = 'public',
@@ -54,6 +73,14 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
         }, [callback, configQuery, type, channel]);
     };
 
+    /**
+     * Use a subscription to listen to a table in real time.
+     * @param {Object} props - Options for the subscription.
+     * @param {string} props.table - The table to listen to.
+     * @param {Object} props.where - A filter to apply to the subscription.
+     * @param {string} [props.channel=general] - The channel to subscribe to.
+     * @returns {UseQueryResult} The result of the subscription.
+     */
     const useSupaRealtime = ({
         table,
         where,
