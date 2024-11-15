@@ -30,7 +30,7 @@ export interface SupabaseQueryConfig<
     count?: 'exact' | 'planned' | 'estimated';
     enabled?: boolean;
     order?: orderWhere<V>;
-    range?: baseRangeWhere;
+    range?: baseRangeWhere | baseRangeWhere[];
     csv?: boolean;
     explain?: {
         analyze?: boolean;

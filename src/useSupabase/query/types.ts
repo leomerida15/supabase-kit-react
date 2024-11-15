@@ -36,11 +36,13 @@ export type overlapsWhere<T> = Partial<
     Record<T extends Array<any> ? keyof T[0] : keyof T, string | string[]>
 >;
 
+export type textSearchWhereConfig = {
+    text: string;
+    options?: { config?: string; type?: 'plain' | 'phrase' | 'websearch' };
+};
+
 export type textSearchWhere<T> = Partial<
-    Record<
-        T extends Array<any> ? keyof T[0] : keyof T,
-        [string, options?: { config?: string; type?: 'plain' | 'phrase' | 'websearch' }]
-    >
+    Record<T extends Array<any> ? keyof T[0] : keyof T, textSearchWhereConfig>
 >;
 
 export type orderWhere<T> = Partial<
@@ -143,4 +145,7 @@ export type Where<V> = {
 
 export type WhereKeys = keyof Where<any>;
 
-export type WhereBasicKeys = keyof Omit<Where<any>, 'or' | 'filter' | 'match'>;
+export type WhereBasicKeys = keyof Omit<
+    Where<any>,
+    'or' | 'filter' | 'match' | 'textSearch' | 'not'
+>;
