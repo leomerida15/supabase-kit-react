@@ -38,7 +38,7 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
     }: SupaSubscriptionProps<D>) => {
         const filter = useMemo(() => {
             if (!where) return '';
-            const base = `${where?.key}=${where?.operator}`;
+            const base = `${where?.key as any}=${where?.operator}`;
 
             if (where?.operator === 'in') return `${base}.(${where?.value.toString()})`;
 
@@ -64,7 +64,7 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
         useEffect(() => {
             const subscription = client
                 .channel(channel)
-                .on(type, configQuery, callback)
+                .on(type as any, configQuery, callback)
                 .subscribe();
 
             return () => {
@@ -81,11 +81,13 @@ export const createSupabaseSubscription = <D extends DatabaseTemp>(
      * @param {string} [props.channel=general] - The channel to subscribe to.
      * @returns {UseQueryResult} The result of the subscription.
      */
-    const useSupaRealtime = ({
+    const useSupaRealtime = <T extends keyof D['public']['Tables'] & string>({
         table,
         where,
         channel = 'general',
-    }: Omit<SupaSubscriptionProps<D>, 'callback' | 'type' | 'event'>) => {
+    }: Omit<SupaSubscriptionProps<D>, 'callback' | 'type' | 'event'> & {
+        table: T;
+    }) => {
         const queryClient = useQueryClient();
 
         const queryConfig = useMemo(

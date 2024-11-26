@@ -19,15 +19,8 @@ export interface SupaSubscriptionProps<
     D extends DatabaseTemp,
     T extends `${REALTIME_POSTGRES_CHANGES_LISTEN_EVENT}` = '*',
     K extends keyof (D['public']['Tables'] & D['public']['Views']) = keyof (D['public']['Tables'] &
-        D['public']['Views']) &
-        Parameters<SupabaseClient<D>['from']>['0'],
-    V = (D['public']['Tables'] & D['public']['Views'])[K] extends {
-        Row: infer R;
-    }
-        ? R extends Array<any>
-            ? keyof R[0]
-            : keyof R
-        : string,
+        D['public']['Views']),
+    V = (D['public']['Tables'] & D['public']['Views'])[K]['Row'],
 > {
     /**
      * The table to subscribe to.
@@ -42,7 +35,7 @@ export interface SupaSubscriptionProps<
     /**
      * The type of event to listen for. Defaults to 'postgres_changes'.
      */
-    type?: `${REALTIME_LISTEN_TYPES.POSTGRES_CHANGES}`;
+    type?: `${REALTIME_LISTEN_TYPES}`;
 
     /**
      * The event to listen for. Defaults to '*'.
@@ -62,7 +55,7 @@ export interface SupaSubscriptionProps<
         /**
          * The key to filter by.
          */
-        key: V;
+        key: keyof V;
 
         /**
          * The operator to use for the filter.

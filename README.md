@@ -73,7 +73,7 @@ export const Example = () => {
 
 - enabled — Flag to enable/disable the query execution.
 
-- configObj — Additional configuration for the query.
+- where — condition by where how in, is, eq, neq, filter, etc.
 
 ```typescript
 'use client';
